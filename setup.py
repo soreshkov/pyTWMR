@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
 VERSION = '0.0.1'
-DESCRIPTION = 'A package to perform Two-sample Mendelian Randomization using Numba'
-LONG_DESCRIPTION = 'A package to perform Two-sample Mendelian Randomization using Numba'
+DESCRIPTION = 'A package to perform Two-sample Mendelian Randomization'
+LONG_DESCRIPTION = 'A package to perform Two-sample Mendelian Randomization using Torch'
 
 setup(
     name="pyTWMR",
@@ -15,8 +15,8 @@ setup(
     install_requires=['numpy', 'torch' , 'pandas'],
     entry_points={
         'console_scripts': [
-            'pyTWMR = pyTWMR.__main__:main',
-            'pyRevTWMR = pyRevTWMR.cli:main'
+            'TWMR = pyTWMR.__main__:main',
+            'RevTWMR = pyRevTWMR.cli:main'
         ]
     },
     keywords=['python', 'MR', 'Mendelian Randomization', 'Torch', 'GPU'],
