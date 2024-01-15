@@ -15,7 +15,7 @@ setup(
     install_requires=['numpy', 'torch' , 'pandas'],
     entry_points={
         'console_scripts': [
-            'TWMR = pyTWMR.__main__:main',
+            'TWMR = pyTWMR.cli:main',
             'RevTWMR = pyRevTWMR.cli:main'
         ]
     },
