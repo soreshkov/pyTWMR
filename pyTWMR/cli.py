@@ -7,14 +7,14 @@ from pyTWMR import TWMR
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--beta', help='Path to the file containing the beta matrix of effect sizes of SNPs on gene expression')
-    parser.add_argument('--gamma', help='Path to the file containing the gamma vector of SNP effect sizes on the trait')
-    parser.add_argument('--ld', help='Path to the file containing the LD matrix with correlation coefficients between SNPs')
+    parser.add_argument('--beta',required=True, help='Path to the file containing the beta matrix of effect sizes of SNPs on gene expression')
+    parser.add_argument('--gamma',required=True, help='Path to the file containing the gamma vector of SNP effect sizes on the trait')
+    parser.add_argument('--ld',required=True, help='Path to the file containing the LD matrix with correlation coefficients between SNPs')
 
-    parser.add_argument('--nEQTLs',type=int, help='Number of samples in the eQTL study used to estimate SNP effects on gene expression')
-    parser.add_argument('--nGWAS',type=int, help='Number of samples in the GWAS used to estimate SNP effects on trait')
+    parser.add_argument('--nEQTLs',required=True,type=int, help='Number of samples in the eQTL study used to estimate SNP effects on gene expression')
+    parser.add_argument('--nGWAS',required=True,type=int, help='Number of samples in the GWAS used to estimate SNP effects on trait')
 
-    parser.add_argument('--output', help='Path to output file')
+    parser.add_argument('--output',required=True, help='Path to output file')
     return parser.parse_args()
 
 
