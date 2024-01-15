@@ -12,7 +12,7 @@ setup(
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     packages=find_packages(),
-    install_requires=['numpy', 'torch'],
+    install_requires=['numpy', 'torch' , 'pandas'],
     entry_points={
         'console_scripts': [
             'pyTWMR = pyTWMR.__main__:main',
