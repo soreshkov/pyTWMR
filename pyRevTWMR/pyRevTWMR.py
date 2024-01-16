@@ -26,8 +26,8 @@ try:
         gamma = torch.from_numpy(gamma).to(device, dtype=torch.float32)
         ldMatrix = torch.eye(len(gamma)).to(device, dtype=torch.float32) if ldMatrix is None else torch.from_numpy(ldMatrix).to(device, dtype=torch.float32)
 
-        tS = beta.T @ (inverse(ldMatrix) @  beta)
-        alpha = torch.nan_to_num(beta.T  @ (inverse(ldMatrix) @ gamma)  / tS)
+        tS = beta @ (inverse(ldMatrix) @  beta)
+        alpha = torch.nan_to_num(beta  @ (inverse(ldMatrix) @ gamma)  / tS)
         D  = ldMatrix
         invD = inverse(D)
         GCG = beta.T @ (invD @ beta)
@@ -48,7 +48,7 @@ try:
         SEs = torch.cat((torch.full_like(beta, 1/np.sqrt(NGwas)).to(device), torch.sqrt(Vgam))  )
         R = torch.eye(2).to(device, dtype=torch.float32)
         J = torch.cat((df_dG, df_dg[None, :].repeat(df_dG.shape[0],1)), axis=1)
-        sigma = torch.nan_to_num((SEs @ SEs.T) * (torch.kron(ldMatrix, R)))
+        sigma = torch.nan_to_num((SEs @ SEs.T) * (torch.kron(ldMatrix.contiguous(), R.contiguous())))
         V = J @ sigma @ J.T        
         se = torch.nan_to_num(torch.sqrt(V))
         return alpha.numpy(), torch.diagonal(se).numpy()

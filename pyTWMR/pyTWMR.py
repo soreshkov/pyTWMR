@@ -57,18 +57,20 @@ try:
         GCG = beta.T @ (invD @ beta)
         GCG_inv = inverse(GCG)
         df_dg = GCG_inv @ beta.T @ invD
-        p1= gamma @ invD @ (beta @ GCG_inv @ beta.T @ invD + torch.eye(len(beta)))
+        p1= gamma @ invD @ (beta @ GCG_inv @ beta.T @ invD + torch.eye(len(beta)).to(device))
         p1 = torch.kron(GCG_inv.contiguous() , p1)
         p22 = GCG_inv @ beta.T @ invD
-        p21 = - gamma.T @ invD @ beta @ GCG_inv
+        p21 = - gamma @ invD @ beta @ GCG_inv
         df_dG = p1 + torch.kron(p21,p22)
-        SEs = torch.cat((torch.full((beta.shape[0] * beta.shape[1],), 1 / np.sqrt(nEQTLs)), torch.full((len(gamma),), 1/np.sqrt(NGwas))))
-        R = torch.eye(beta.shape[1]+1)
-        sigma = (SEs @ SEs.T) * (torch.kron(ldMatrix, R))
+        SEs = torch.cat((torch.full((beta.shape[0] * beta.shape[1],), 1 / np.sqrt(nEQTLs)), torch.full((len(gamma),), 1/np.sqrt(NGwas)))).to(device)
+        R = torch.eye(beta.shape[1]+1).to(device)
+
+        sigma = (SEs @ SEs) * (torch.kron(ldMatrix.contiguous(), R.contiguous()))
         J = torch.cat((df_dG, df_dg), axis=1)
         V = J @ sigma @ J.T
         se = torch.sqrt(V)
-        return alpha.numpy(), se.numpy()
+
+        return alpha.numpy(), torch.diagonal(se).numpy()
         
             
 
