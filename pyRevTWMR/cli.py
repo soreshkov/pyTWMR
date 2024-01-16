@@ -11,7 +11,7 @@ def parse_args():
     parser.add_argument('--gamma',required=True, help='Path to the file containing the gamma matrix')
     parser.add_argument('--ld',required=True, help='Path to the file containing the LD matrix with correlation coefficients between SNPs')
     parser.add_argument('--nGWAS',required=True,type=int, help='Number of samples in the GWAS used to estimate SNP effects on trait')
-    parser.add_argument('--output', help='Path to output file')
+    parser.add_argument('--output',required=True, help='Path to output file')
     return parser.parse_args()
 
 
@@ -33,7 +33,7 @@ def main():
 
     output = pd.DataFrame(alpha, index=beta.index, columns=['alpha'])
     output['se'] = se
-    output.to_csv(args.output, sep='\t')
+    output.to_csv(args.output, sep='\t', index=False)
 
 
 

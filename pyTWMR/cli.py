@@ -35,9 +35,7 @@ def main():
 
     output = pd.DataFrame(alpha, index=beta.index, columns=['alpha'])
     output['se'] = se
-    output.to_csv(args.output, sep='\t')
-
-
+    output.to_csv(args.output, sep='\t', index=False)
 
 if __name__ == '__main__':
     main()
