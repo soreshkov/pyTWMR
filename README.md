@@ -26,53 +26,180 @@ OR
 
 ## Usage
 
-### In Python script
-
-Core of methods are functions `TWMR` and `revTWMR`, implemented in corresponding files.
-
-Import desired method:
-
-```python
-from pyRevTWMR import revTWMR
-from pyTWMR import TWMR
-```
+### As part of Python script
 
 #### TWMR
 
-To use `TWMR`, just call function `TWMR`, which expects following parameters:
+<details>
+<summary> TWMR</summary>
 
-- `beta` - numpy 2D array, with effect sizes of QTLs on gene expression, with columns corresponding to genes and rows - to QTLs.
-- `gamma` - numpy vector(1D array) with effect sizes of QTLs on outcome trait. Size of that vector is expected to be equal to number of rows in `beta`.
-- `nEQTLs` - number of QTLs in study
-- `nGWAS` - number of samples in QTL-to-trait GWAS
-- `ldMatrix` - square numpy array with LD between QTLs. If not provided, identity matrix is used.
-- `pseudoInverse` - True/False, True to use Moore-Penrose pseudo-inverse instead of inverse matrix
-- `device` - If there is GPU with Cuda API available, you can pass name of GPU device(as enumerated by PyTorch framework) to utilize it instead of `cpu`(default option)
+```python
+TWMR(beta: Union[np.ndarray, torch.Tensor],  
+     gamma: Union[np.ndarray, torch.Tensor],  
+     nEQTLs:int,  
+     NGwas:int,   
+     ldMatrix = None,   
+     pseudoInverse = False,   
+     device='cpu')
+```
 
-Output:
+    Performs Two-Sample Mendelian Randomization (TWMR) analysis.
 
-- `alpha` - array of causal effect values for each gene
-- `se` - array of standard error estimations for each estimated causal effect
+    Parameters
+    ----------
 
----
+    beta : Union[np.ndarray, torch.Tensor]
+        Matrix of standardized QTL effect sizes for the exposure.
+    gamma : Union[np.ndarray, torch.Tensor]
+        Vector of QTL effect sizes for the outcome.
+    nEQTLs : int
+        Number of EQTLs in QTL study.
+    NGwas : int
+        Number of samples in genome-wide association study.
+    ldMatrix : Union[np.ndarray, torch.Tensor], optional
+        Linkage disequilibrium matrix. Default is None.
+    pseudoInverse : bool, optional
+        If True, use Moore-Penrose pseudo-inverse for matrix inversion. Default is False.
+    device : str, optional
+        Device to use (e.g., 'cpu' or 'cuda'). Default is 'cpu'.
+
+    Returns
+    -------
+    result: TWMRresult
+        Result of TWMR analysis.
+        Attributes:
+        Alpha : np.ndarray
+            Causal effect estimated by TWMR.
+        Se : np.ndarray
+            Standard error of Alpha.
+        Pval : float
+            P-value calculated from Alpha and Se.
+        D : np.ndarray
+            Cohrian Q statistics for QTLs.
+        HetP : np.ndarray
+            P-value for heterogeneity test.  
+</details>
+
+<details>
+<summary>QCorrectedTWMR</summary>
+
+```python
+QCorrectedTWMR(
+        beta: np.ndarray,
+        gamma: np.ndarray,
+        nEQTLs:int,
+        NGwas:int,
+        rsnames:Union[np.ndarray, List[str]],
+        ldMatrix: Union[np.ndarray, torch.Tensor] = None,
+        threshold=0.05,
+        pseudoInverse = False, device='cpu')
+```
+    TWMR method with heterogenity outlier correction. Excludes SNPs by Cohrain Q heterogenity test until SNP heterogenity is no longer observed.
+
+    Parameters
+    ----------
+
+    beta : Union[np.ndarray, torch.Tensor]
+        Matrix of QTL effect sizes for the exposure.
+    gamma : Union[np.ndarray, torch.Tensor]
+        Vector of QTL effect sizes for the outcome.
+    nEQTLs : Union[np.ndarray, List[str]]
+        Number of EQTLs in QTL study.
+    NGwas : int
+        Number of GWAS (genome-wide association study) samples.
+    ldMatrix : Union[np.ndarray, torch.Tensor], optional
+        Linkage disequilibrium matrix. Default is None.
+    pseudoInverse : bool, optional
+        If True, use Moore-Penrose pseudo-inverse for matrix inversion. Default is False.
+    device : str, optional
+        Device to use (e.g., 'cpu' or 'cuda'). Default is 'cpu'.
+        
+    Returns
+    -------
+    result: TWMRresult
+        Result of TWMR analysis with outliers removed by iterative Cohrain Q test.
+        Attributes:
+        Alpha : float
+            Causal effect estimated by TWMR.
+        Se : float
+            Standard error of Alpha.
+        Pval : float
+            P-value calculated from Alpha and Se.
+        D : float
+            Cohrian Q statistics for Alphas.
+        HetP : float
+            P-value for heterogeneity test.   
+    rsnames: List[str]
+        List of QTLs after removing outliers.
+
+
+</details>
 
 #### revTWMR
 
-To use `revTWMR`, just call function `revTWMR`, which expects following parameters:
+<details>
+<summary>revTWMR</summary>
 
-- `beta` - numpy vector(1D array) with effect sizes of QTLs on outcome trait. Size of that vector is expected to be equal to number of rows in `gamma`
-- `gamma` - numpy 2D array, with effect sizes of QTLs on gene expression, with columns corresponding to genes and rows - to QTLs.
-- `nGWAS` - number of samples in QTL-to-trait GWAS
-- `ldMatrix` - square numpy array with LD between QTLs. If not provided, identity matrix is used.
-- `pseudoInverse` - True/False, True to use Moore-Penrose pseudo-inverse instead of inverse matrix
-- `device` - If there is GPU with Cuda API available, you can pass name of GPU device(as enumerated by PyTorch framework) to utilize it instead of `cpu`(default option)
+```python
+revTWMR(
+        qtlExposureEffects :Union[np.ndarray, torch.Tensor], 
+        qtlTraitGWASEffects:Union[np.ndarray, torch.Tensor], 
+        qtlLabels:Union[np.ndarray, List[str]], 
+        gwasSizes:Union[np.ndarray, torch.Tensor], 
+        qtlExpSize:float, 
+        pValIterativeThreshold:float = 0.05,
+        pseudoInverse = False, 
+        device='cpu')
+```
+    revTWMR method for Mendelian Randomization anylysis. 
+    Analyses the causal effect of trait(outcome) on gene expression(exposure) derived from GWAS and eQTL data.
+    
+    Parameters
+    ----------
+        qtlExposureEffect : Union[np.ndarray, torch.Tensor]
+            Vector of standardized effect sizes trans-QTLs effect on gene expression, shape (QTLs,) 
+        qtlTraitGWASEffects :  Union[np.ndarray, torch.Tensor]
+            Vector of standardized effect sizes of independent SNPs on trait, shape (QTLs,)
+        qtlLabels : Union[np.ndarray, List[str]]
+            QTL name labels, shape (QTLs,)
+        gwasSizes : Union[np.ndarray, torch.Tensor]
+            GWAS sample size, shape (QTLs,)
+        qtlExpSize : float
+            QTL Exposure sample size, number
+        pValIterativeThreshold : float, optional
+            Threshold to exclude pleyotropic QTLs. Defaults to 0.05.
+        pseudoInverse : bool, optional
+            Forces Moore-Penrose pseudoinverse instead of default inverse matrix operation. Defaults to False.
+        device : str, optional 
+            Device to use for computations. Could be 'cpu' or 'cuda' if CUDA is available. Defaults to 'cpu'.
 
-Output:
+    Returns
+    -------
+        result: revTWMRResult
+            Named tuple containing attributes:
+            Alpha : float
+                Causal effect estimated by revTWMR before applying heterogeneity test
+            Se : float
+                Standard error of Alpha
+            Pval : float
+                Pvalue calculated from Alpha and Se
+            N : float
+                number of SNPs used as instruments 
+            HetP : float
+                Original P-value for heterogeneity test
+            AlphaIterative : float
+                Causal effect estimated by revTWMR after removing the SNPs detected as outliers by the heterogenity test
+            SeIterative : float
+                standard error of AlphaIterative
+            PvalIterative : float
+                Pvalue calculated from AlphaIterative and SeIterative
+            HetPIterative : float
+                Pvalue of heterogenity test after outlier removal
+            rsname : List[str]
+                SNPs left after outlier removal   
+</details>
 
-- `alpha` - array of causal effect values for each gene
-- `se` - array of standard error estimations for each estimated causal effect
-
-See [demo.ipynb](https://github.com/soreshkov/pyTWMR/blob/master/demo.ipynb) for usage example.
+Also, see [demo.ipynb](https://github.com/soreshkov/pyTWMR/blob/master/demo/demo.ipynb) for usage example.
 
 ### As console app
 
@@ -80,43 +207,63 @@ After installation it is possible to use package as console application.
 
 For TWMR command would be:
 
-`TWMR --beta BETA --gamma GAMMA --ld LD --nEQTLs NEQTLS --nGWAS NGWAS --output OUTPUT`
+`pyTWMR [-h] --effect EFFECT --ld LD --nEQTLs NEQTLS --nGWAS NGWAS  [--removeOutliers] [--pseudoInverse PSEUDOINVERSE] [--device DEVICE] --output OUTPUT`
 
 Where:
 
-- `beta` - path to TSV file containing the beta matrix of effect sizes of SNPs on gene expression
+- `effect` - path to TSV file containing the beta matrix of effect sizes of SNPs on gene expression. For example of such file see `demo/TWMR/ENSG00000000419.matrix`
 
-- `gamma` - path to TSV file containing the gamma vector of SNP effect sizes on the trait
-
-- `ld`- path to the file containing the LD matrix with correlation coefficients between SNPs
+- `ld`- path to the file containing the LD matrix with correlation coefficients between SNPs. For example of such file see `demo/TWMR/ENSG00000000419.ld`
 - `nEQTLs` -  number of samples in the eQTL study used to estimate SNP effects on gene expression
 - `nGWAS` - number of samples in the GWAS used to estimate SNP effects on trait
-- `output` Path to output file
+- `removeOutliers` - Iteratively removes heterogenious outliers if this option is present
+- `output` - Path to output file
 
-For `beta` matrix we expect tab-separated table, with first column containing QTL labels, and rest of columns containing QTL effects on genes with gene name as column header.
+Method creates TSV file with following columns:
 
-For `gamma` GWAS vector we expect TSV files with first column containing QTLs and second column containing effect size of QTL on outcome trait.
-
-For `ld` matrix we expect TSV file containing square matrix of correlations, without any column or row headers. Order of QTLs in matrix should match order of QTLs in `beta` and `gamma`.
-
-Output TSV file contains of 3 columns, which contain list of genes, its estimated causal effect and standard error of this estimation.
+- `Gene` - Gene labels from input table columns
+- `Alpha` - Causal effect estimation for each gene
+- `Standard error` - Standard error estimation for each causal effect
+- `P-value` - P-value computed from corresponding `Alpha` and `Standard error`
+- `Heterogenity P-value` - P-value for heterogenity test
 
 ---
 
 Command for RevTWMR:
 
-`RevTWMR --beta BETA --gamma GAMMA --ld LD --nGWAS NGWAS --output OUTPUT`
+`pyRevTWMR [-h] --effect EFFECT [--ld LD] --sampleSize SAMPLESIZE [--hetThreshold HETTHRESHOLD] [--pseudoInverse PSEUDOINVERSE] [--device DEVICE] --output OUTPUT`
 
-- `beta` - path to the file containing the beta vector
-- `gamma` -    path to the file containing the gamma matrix
-- `ld` -   path to the file containing the LD matrix with correlation coefficients between SNPs
-- `nGWAS` -     number of samples in the GWAS used to estimate SNP effects on trait
+- `effect` - path to the tab-separated file containing the standardized QTLs effect sizes for genes and GWAS. For example of such file see `demo/revTWMR/effect.matrix.tsv`
+- `sampleSize` -  path to the tab-separated file containing the standardized sample size for QTL study. For example of such file see `demo/revTWMR/genes.N.tsv`
+- `ld` -   path to the file containing the LD matrix with correlation coefficients between QTLs
+- `hetThreshold` - P-value threshold for heterogenity test
 - `output` -  path to output file
 
-For `gamma` matrix we expect tab-separated table, with first column containing QTL labels, and rest of columns containing QTL effects on genes with gene name as column header.
+---
+Common arguments are:  
 
-For `beta` GWAS vector we expect TSV files with first column containing QTLs and second column containing effect size of QTL on outcome trait.
+- `pseudoInverse` - Uses Moore-Penrose pseudo-inverse instead of basic inverse matrix operation if present
+- `device` - could be `cpu` or `cuda`. If there is CUDA compute capability, package will try to use it for computations
 
-For `ld` matrix we expect TSV file containing square matrix of correlations, without any column or row headers. Order of QTLs in matrix should match order of QTLs in `beta` and `gamma`.
+Method creates TSV file with following columns:
 
-Output TSV file contains of 3 columns, which contain list of genes, its estimated causal effect and standard error of this estimation.
+- `Gene` - Gene labels from input table columns
+- `Alpha Original`- Causal effect estimation for each gene
+- `SE Original` - Standard error estimation for each causal effect
+- `P Value Original` - P-value computed from corresponding `Alpha` and `Standard error`
+- `N Original` - Number of QTLs used to estimate causal effect
+- `P heterogeneity Original` - P-value for heterogenity test
+- `Alpha` - Causal effect estimation for each gene after heterogenius outlier removed
+- `SE` - Standard error estimation for each causal effect  after heterogenius outlier removed
+- `P` - P-value computed from corresponding `Alpha` and `Standard error` after heterogenius outlier removed
+- `P heterogeneity` - P-value for heterogenity test after heterogenius outlier removed
+- `N` - Number of QTLs used to estimate causal effect after heterogenius outlier removed
+
+If no heterogenity is detected, then values for gene before and after outlier removal will match.
+
+### Unit tests
+
+We provide basic unit-tests to ensure codebase stability.
+
+Tests could be run as simple script:
+`python3 tests/tests.py`

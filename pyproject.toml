@@ -1,0 +1,84 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyTWMR"
+version = "1.0.1"
+description = "A package to perform Two-sample Mendelian Randomization"
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = ["sample", "setuptools", "development"]
+
+authors = [
+    {name = "Sergey Oreshkov"},
+    {name = "Kaido Lepik"}
+]
+
+maintainers = [
+    {name = "Sergey Oreshkov"},
+]
+
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Mendelian Randomization",
+    "Environment :: Console",
+
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+
+]
+
+dependencies = [
+    'asttokens==2.4.1',
+    'comm==0.2.2',
+    'debugpy==1.8.2',
+    'decorator==5.1.1',
+    'exceptiongroup==1.2.1',
+    'executing==2.0.1',
+    'filelock==3.15.3',
+    'fsspec==2024.6.0',
+    'ipykernel==6.29.4',
+    'ipython==8.26.0',
+    'jedi==0.19.1',
+    'Jinja2==3.1.4',
+    'jupyter_client==8.6.2',
+    'jupyter_core==5.7.2',
+    'MarkupSafe==2.1.5',
+    'matplotlib-inline==0.1.7',
+    'mpmath==1.3.0',
+    'nest-asyncio==1.6.0',
+    'networkx==3.3',
+    'numpy==2.0.0',
+    'packaging==24.1',
+    'pandas==2.2.2',
+    'parso==0.8.4',
+    'pexpect==4.9.0',
+    'platformdirs==4.2.2',
+    'prompt_toolkit==3.0.47',
+    'psutil==6.0.0',
+    'ptyprocess==0.7.0',
+    'pure-eval==0.2.2',
+    'Pygments==2.18.0',
+    'python-dateutil==2.9.0.post0',
+    'pytz==2024.1',
+    'pyzmq==26.0.3',
+    'scipy==1.13.1',
+    'six==1.16.0',
+    'stack-data==0.6.3',
+    'sympy==1.12.1',
+    'torch==2.3.1',
+    'tornado==6.4.1',
+    'traitlets==5.14.3',
+    'triton==2.3.1',
+    'typing_extensions==4.12.2',
+    'tzdata==2024.1',
+    'wcwidth==0.2.13']
+
+[project.scripts]
+pyTWMR = "TWMR.cli:main"
+pyRevTWMR = "revTWMR.cli:main"
