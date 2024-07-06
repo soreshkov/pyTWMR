@@ -105,7 +105,7 @@ def TWMR(
 
     GCG_inv = inverse(GCG)
     df_dg = GCG_inv @ beta.T @ invD
-    p1= gamma @ invD @ (beta @ GCG_inv @ beta.T @ invD + torch.eye(len(beta)).to(device))
+    p1= gamma @ invD @ (-beta @ GCG_inv @ beta.T @ invD + torch.eye(len(beta)).to(device))
     p1 = torch.kron(GCG_inv.contiguous() , p1)
     p22 = GCG_inv @ beta.T @ invD
     p21 = - gamma @ invD @ beta @ GCG_inv
