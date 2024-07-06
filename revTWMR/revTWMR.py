@@ -74,7 +74,7 @@ def Alpha(beta: torch.Tensor, gamma: torch.Tensor, D: torch.Tensor,pseudoInverse
     inverse = torch.linalg.pinv if pseudoInverse else torch.linalg.inv
     S = beta @ inverse(D) @ beta
     alpha = beta @ inverse(D) @ gamma / S
-    return alpha
+    return alpha.cpu()
 
 
 def SE_iterative(beta: torch.Tensor, gamma: torch.Tensor, ngwas, nqtl : float, pseudoInverse = False, device='cpu'):
@@ -94,7 +94,7 @@ def SE_iterative(beta: torch.Tensor, gamma: torch.Tensor, ngwas, nqtl : float, p
     J = torch.hstack([df_DG, df_dg ]).to(device)
     R = torch.eye(2).to(device)
     Sigma = (SEs[:, None] @ SEs[:, None].T )   * torch.kron(D, R)
-    return torch.sqrt(J @ Sigma @ J)
+    return torch.sqrt(J @ Sigma @ J).cpu()
 
 
 def revTWMR(
@@ -154,7 +154,6 @@ def revTWMR(
             rsname : List[str]
                 SNPs left after outlier removal
     """
-    #todo: sanitize inputs
 
     if not isinstance(qtlExposureEffects, np.ndarray) and not isinstance(qtlExposureEffects, torch.Tensor):
         raise ValueError('qtlExposureEffect must be either numpy array or torch tensor')
