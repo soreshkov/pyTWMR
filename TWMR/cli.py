@@ -58,7 +58,7 @@ def main():
 
     if args.removeOutliers:
         result,_ = QCorrectedTWMR(
-            beta=effect_df.drop('GWAS', axis=1).to_numpy(), 
+            beta=effect_df.drop('GWAS', axis=1, errors='ignore').to_numpy(), 
             gamma=effect_df['GWAS'].to_numpy(), 
             nEQTLs=nEQTLs, 
             NGwas=nGWAS, 
@@ -69,7 +69,7 @@ def main():
         )
     else:
         result = TWMR(
-                beta=effect_df.drop('GWAS', axis=1).to_numpy(), 
+                beta=effect_df.drop('GWAS', axis=1, errors='ignore').to_numpy(), 
                 gamma=effect_df['GWAS'].to_numpy(), 
                 nEQTLs=nEQTLs, 
                 NGwas=nGWAS, 

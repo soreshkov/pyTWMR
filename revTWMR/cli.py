@@ -37,8 +37,8 @@ def main():
     nGwas = effect.N.values
     
     results = {}
-    for gene in effect.drop(['BETA_GWAS', 'SE', 'N'], axis=1).columns:    
-        effectTbl = effect.drop(['BETA_GWAS', 'SE', 'N'], axis=1)[gene].values
+    for gene in effect.drop(['BETA_GWAS', 'SE', 'N'], axis=1, errors='ignore').columns:    
+        effectTbl = effect.drop(['BETA_GWAS', 'SE', 'N'], axis=1, errors='ignore')[gene].values
         nQtls = sample_size[gene]
         
         result = revTWMR(
