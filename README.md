@@ -25,6 +25,10 @@ OR
 `pip3 install git+https://github.com/soreshkov/pyTWMR.git`
 
 ## Usage
+### Data preparation
+
+Package does not provide any additional methods for data preparation like selection of QTLs or genes.
+For this purpose one can address routines described in following papers by E. Porcu et al. - [Mendelian randomization integrating GWAS and eQTL data reveals genetic determinants of complex and clinical traits](https://doi.org/10.1038/s41467-019-10936-0) and [Differentially expressed genes reflect disease-induced rather than disease-causing changes in the transcriptome](https://doi.org/10.1038/s41467-021-25805-y).
 
 ### As part of Python script
 
@@ -211,7 +215,7 @@ For TWMR command would be:
 
 Where:
 
-- `effect` - path to TSV file containing the beta matrix of effect sizes of SNPs on gene expression. For example of such file see `demo/TWMR/ENSG00000000419.matrix`
+- `effect` - path to TSV file containing the beta matrix of effect sizes of SNPs on gene expression. For example of such file see `demo/TWMR/ENSG00000000419.matrix`. TWMR expects first column to contain QTL labels, last column called `GWAS` to contain QTL trait effects from GWAS study, and all other columns contain per-gene data of standardized QTL effect on gene.
 
 - `ld`- path to the file containing the LD matrix with correlation coefficients between SNPs. For example of such file see `demo/TWMR/ENSG00000000419.ld`
 - `nEQTLs` -  number of samples in the eQTL study used to estimate SNP effects on gene expression
@@ -233,8 +237,8 @@ Command for RevTWMR:
 
 `pyRevTWMR [-h] --effect EFFECT [--ld LD] --sampleSize SAMPLESIZE [--hetThreshold HETTHRESHOLD] [--pseudoInverse PSEUDOINVERSE] [--device DEVICE] --output OUTPUT`
 
-- `effect` - path to the tab-separated file containing the standardized QTLs effect sizes for genes and GWAS. For example of such file see `demo/revTWMR/effect.matrix.tsv`
-- `sampleSize` -  path to the tab-separated file containing the standardized sample size for QTL study. For example of such file see `demo/revTWMR/genes.N.tsv`
+- `effect` - path to the tab-separated file containing the standardized QTLs effect sizes for genes and GWAS. For example of such file see `demo/revTWMR/effect.matrix.tsv` RevTWMR expects first column to contain QTL labels, `BETA_GWAS` column to contain QTL effects on trait from GWAS study, `N` column to contain sample size for each QTL from same GWAS study.
+- `sampleSize` -  path to the tab-separated file containing the standardized sample size for each gene in gene-QTL studies. For example of such file see `demo/revTWMR/genes.N.tsv`
 - `ld` -   path to the file containing the LD matrix with correlation coefficients between QTLs
 - `hetThreshold` - P-value threshold for heterogenity test
 - `output` -  path to output file
